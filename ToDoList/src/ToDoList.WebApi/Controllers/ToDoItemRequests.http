@@ -1,45 +1,46 @@
 # For more info on HTTP files go to https://aka.ms/vs/httpfile
 @host=http://localhost
 @port=5000
+@endpoint =api/ToDoItems
 
 
 //List all ToDoItems
-GET {{host}}:{{port}}/api/ToDoItems
+GET {{host}}:{{port}}/{{endpoint}}
 
 ###
 
 //Get specific ToDoItem by id
 @itemToGetId = 1
-GET {{host}}:{{port}}/api/ToDoItems/{{itemToGetId}}
+GET {{host}}:{{port}}/{{endpoint}}/{{itemToGetId}}
 
 ###
 
 //Add new ToDoItem
-POST {{host}}:{{port}}/api/ToDoItems
+POST {{host}}:{{port}}/{{endpoint}}
 Content-Type: application/json
 
 {
-  "name": "Example New Task",
-  "description": "Example New Description",
-  "isCompleted": false
+  "name": "Nakoupit oběd",
+  "description": "U Václava",
+  "isCompleted": true
 }
 
 ###
 
 //Update existing ToDoItem by id
-@itemToUpdateId = 1
+@itemToUpdateId = 2
 
-PUT {{host}}:{{port}}/api/ToDoItems/{{itemToUpdateId}}
+PUT {{host}}:{{port}}/{{endpoint}}/{{itemToUpdateId}}
 Content-Type: application/json
 
 {
-  "name": "Updated Task",
-  "description": "Updated Description",
+  "name": "Uklidit",
+  "description": "Ložnici",
   "isCompleted": false
 }
 
 ###
 
 //Delete exisiting ToDoItem by id
-@itemToDeleteId = 1
-DELETE {{host}}:{{port}}/api/ToDoItems/{{itemToDeleteId}}
+@itemToDeleteId = 4
+DELETE {{host}}:{{port}}/{{endpoint}}/{{itemToDeleteId}}

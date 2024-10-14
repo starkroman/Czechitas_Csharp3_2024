@@ -1,5 +1,7 @@
 namespace ToDoList.WebApi.Controllers;
+
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 
@@ -7,7 +9,13 @@ using ToDoList.Domain.Models;
 [Route("api/[controller]")]
 public class ToDoItemsController : ControllerBase
 {
-    private static readonly List<ToDoItem> items = [];
+    //private static readonly List<ToDoItem> items = [];
+    // simulace databáze
+    private static List<ToDoItem> newToDoItems = new List<ToDoItem>
+    {
+        new ToDoItem { ToDoItemId = 1, Name = "Nakoupit", Description = "Kaufland", IsCompleted = false },
+        new ToDoItem { ToDoItemId = 2, Name = "Uklidit",  Description = "Dětský pokoj", IsCompleted = true }
+    };
 
     [HttpPost]
     public IActionResult Create(ToDoItemCreateRequestDto request)
@@ -18,39 +26,59 @@ public class ToDoItemsController : ControllerBase
         //try to create an item
         try
         {
-            item.ToDoItemId = items.Count == 0 ? 1 : items.Max(o => o.ToDoItemId) + 1;
-            items.Add(item);
+            item.ToDoItemId = newToDoItems.Count == 0 ? 1 : newToDoItems.Max(o => o.ToDoItemId) + 1;
+            newToDoItems.Add(item);
         }
         catch (Exception ex)
         {
             return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
         }
+        // odpověď klientovi
+        return Created();  // 201
 
-        //respond to client
-        return NoContent(); //201 //tato metoda z nějakého důvodu vrací status code No Content 204, zjištujeme proč ;)
     }
-
     [HttpGet]
-    public IActionResult Read()
+    public IActionResult Read()   // rozhraní IActionResult
     {
-        return Ok();
+        return Ok(newToDoItems);
     }
 
-    [HttpGet("{toDoItemId:int}")]
-    public IActionResult ReadById(int toDoItemId)
+    [HttpGet("{id:int}")]
+    public IActionResult ReadById(int id)
     {
-        return Ok();
+        var item = newToDoItems.FirstOrDefault(i => i.ToDoItemId == id);
+
+        if(item == null)
+            return NotFound();
+
+        return Ok(item);
     }
 
-    [HttpPut("{toDoItemId:int}")]
-    public IActionResult UpdateById(int toDoItemId, [FromBody] ToDoItemUpdateRequestDto request)
+    [HttpPut("{id:int}")]
+    public IActionResult UpdateById(int id, [FromBody] ToDoItemUpdateRequestDto request)
     {
-        return Ok();
+        var item = newToDoItems.FirstOrDefault(i => i.ToDoItemId == id);
+
+        if(item == null)
+            return NotFound();
+
+        // aktualizace hodnot
+        item.Name = request.Name;
+        item.Description = request.Description;
+        item.IsCompleted = request.IsCompleted;
+
+        return NoContent();  //204
     }
 
-    [HttpDelete("{toDoItemId:int}")]
-    public IActionResult DeleteById(int toDoItemId)
+    [HttpDelete("{id:int}")]
+    public IActionResult DeleteById(int id)
     {
-        return Ok();
+        var item = newToDoItems.FirstOrDefault(i => i.ToDoItemId == id);
+
+        if(item == null)
+            return NotFound();
+
+        newToDoItems.Remove(item);
+        return NoContent();
     }
 }
