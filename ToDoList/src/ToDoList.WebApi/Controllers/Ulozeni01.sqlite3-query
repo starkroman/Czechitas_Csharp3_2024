@@ -1,0 +1,5 @@
+-- database: ../../../data/localdb.db
+SELECT
+    *
+FROM
+    ToDoItems;

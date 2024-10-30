@@ -22,7 +22,7 @@ Content-Type: application/json
 {
   "name": "Nakoupit oběd",
   "description": "U Václava",
-  "isCompleted": true
+  "isCompleted": false
 }
 
 ###
@@ -42,5 +42,5 @@ Content-Type: application/json
 ###
 
 //Delete exisiting ToDoItem by id
-@itemToDeleteId = 4
+@itemToDeleteId = 2
 DELETE {{host}}:{{port}}/{{endpoint}}/{{itemToDeleteId}}

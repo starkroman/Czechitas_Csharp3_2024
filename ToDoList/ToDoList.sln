@@ -1,4 +1,5 @@
 ﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -8,6 +9,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoList.WebApi", "src\ToDoList.WebApi\ToDoList.WebApi.csproj", "{1E5247E0-B919-44C7-9633-A3B9349041DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoList.Domain", "src\ToDoList.Domain\ToDoList.Domain.csproj", "{9B73AB42-BD0A-4012-8EAA-D2EDC5C9881F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{70E3BF56-E9F8-4464-94AF-ACB5DAB5AECF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoList.Test", "tests\ToDoList.Test\ToDoList.Test.csproj", "{E86012C1-BDAB-474C-8809-261945C8D5C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoList.Persistence", "src\ToDoList.Persistence\ToDoList.Persistence.csproj", "{6624E4A9-53CC-496B-91AB-55E436E6191B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,9 +33,19 @@ Global
 		{9B73AB42-BD0A-4012-8EAA-D2EDC5C9881F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B73AB42-BD0A-4012-8EAA-D2EDC5C9881F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B73AB42-BD0A-4012-8EAA-D2EDC5C9881F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E86012C1-BDAB-474C-8809-261945C8D5C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E86012C1-BDAB-474C-8809-261945C8D5C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E86012C1-BDAB-474C-8809-261945C8D5C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E86012C1-BDAB-474C-8809-261945C8D5C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6624E4A9-53CC-496B-91AB-55E436E6191B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6624E4A9-53CC-496B-91AB-55E436E6191B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6624E4A9-53CC-496B-91AB-55E436E6191B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6624E4A9-53CC-496B-91AB-55E436E6191B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1E5247E0-B919-44C7-9633-A3B9349041DA} = {CDF7A7A2-DFDE-49B9-BFD4-84C253E090DA}
 		{9B73AB42-BD0A-4012-8EAA-D2EDC5C9881F} = {CDF7A7A2-DFDE-49B9-BFD4-84C253E090DA}
+		{E86012C1-BDAB-474C-8809-261945C8D5C9} = {70E3BF56-E9F8-4464-94AF-ACB5DAB5AECF}
+		{6624E4A9-53CC-496B-91AB-55E436E6191B} = {CDF7A7A2-DFDE-49B9-BFD4-84C253E090DA}
 	EndGlobalSection
 EndGlobal
