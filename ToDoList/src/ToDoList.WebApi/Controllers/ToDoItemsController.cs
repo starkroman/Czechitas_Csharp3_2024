@@ -1,9 +1,6 @@
 namespace ToDoList.WebApi.Controllers;
 
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
@@ -22,26 +19,40 @@ public class ToDoItemsController : ControllerBase
         new ToDoItem { ToDoItemId = 2, Name = "Uklidit",  Description = "Dětský pokoj", IsCompleted = true }
     };
     */
-    public readonly List<ToDoItem> newToDoItems = [];
+    //public readonly List<ToDoItem> newToDoItems = [];
 
-    private readonly ToDoItemsContext context;
+    private readonly ToDoItemsContext context;  // odstraníme pro mockování - Lekce06
     private readonly IRepository<ToDoItem> repository;   // doplnění Lekce06
+    public object items;
 
     public object ToDoItems { get; set; }
+    public ToDoItemsController()
+    {
+        //bezparametrický konstruktor
+    }
 
     //přidám (Lekce05) konstruktor
-    /*public ToDoItemsController(ToDoItemsContext context)
+    public ToDoItemsController(ToDoItemsContext context)
     {
         this.context = context;
     }
-    */
 
-    //přidám (Lekce05) konstruktor, modifikace konstruktoru (Lekce06)
+
+    //přidám (Lekce06) konstruktor, modifikace konstruktoru (Lekce06)
+    //Lekce06
+    public ToDoItemsController(IRepository<ToDoItem> repository)
+    {
+        this.repository = repository;
+    }
+
+    // Lekce 05
+    /*
     public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository)
     {
         this.context = context;
         this.repository = repository;
     }
+    */
 
     [HttpPost]
     public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
@@ -70,7 +81,7 @@ public class ToDoItemsController : ControllerBase
         //return Created();  // 201
         return CreatedAtAction(
             nameof(ReadById),
-            new {toDoItemId = item.ToDoItemId},
+            new { toDoItemId = item.ToDoItemId },
             ToDoItemGetResponseDto.FromDomain(item));  // 201
     }
 

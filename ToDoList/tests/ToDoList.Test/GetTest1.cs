@@ -24,7 +24,7 @@ public class GetTest1
             IsCompleted = false
         };
 
-        controller.newToDoItems.Add(toDoItem);
+        //controller.ToDoItems.Add(toDoItem);
 
         // Act
         var result = controller.Read();
