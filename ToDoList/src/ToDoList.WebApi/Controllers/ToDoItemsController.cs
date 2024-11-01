@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
+using ToDoList.Persistence.Repositories;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -24,15 +25,22 @@ public class ToDoItemsController : ControllerBase
     public readonly List<ToDoItem> newToDoItems = [];
 
     private readonly ToDoItemsContext context;
+    private readonly IRepository<ToDoItem> repository;   // doplnění Lekce06
+
+    public object ToDoItems { get; set; }
 
     //přidám (Lekce05) konstruktor
-    public ToDoItemsController(ToDoItemsContext context)
+    /*public ToDoItemsController(ToDoItemsContext context)
     {
         this.context = context;
     }
+    */
 
-    public ToDoItemsController()
+    //přidám (Lekce05) konstruktor, modifikace konstruktoru (Lekce06)
+    public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository)
     {
+        this.context = context;
+        this.repository = repository;
     }
 
     [HttpPost]
@@ -48,8 +56,11 @@ public class ToDoItemsController : ControllerBase
             //item.ToDoItemId = newToDoItems.Count == 0 ? 1 : newToDoItems.Max(o => o.ToDoItemId) + 1;
             //newToDoItems.Add(item);
             // Lekce05
-            context.ToDoItems.Add(item);
-            context.SaveChanges();
+            //context.ToDoItems.Add(item);
+            //context.SaveChanges();
+            // Lekce06
+            repository.Create(item);   // tady to upravím...
+
         }
         catch (Exception ex)
         {
@@ -86,8 +97,8 @@ public class ToDoItemsController : ControllerBase
         : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain));  //200
     }
 
-    [HttpGet("{id:int}")]
-    public IActionResult ReadById(int id)
+    [HttpGet("{toDoItemId:int}")]
+    public IActionResult ReadById(int toDoItemId)
     {
         //try to retrieve the item by id
         ToDoItem? itemToGet;
@@ -95,7 +106,7 @@ public class ToDoItemsController : ControllerBase
         //Lekce05
         try
         {
-            itemToGet = context.ToDoItems.Find(id);
+            itemToGet = context.ToDoItems.Find(toDoItemId);
         }
         catch (Exception ex)
         {
@@ -109,22 +120,31 @@ public class ToDoItemsController : ControllerBase
 
         //Lekce02
         /*
-        var item = newToDoItems.FirstOrDefault(i => i.ToDoItemId == id);
-        if(item == null)
-            return NotFound();
-        return Ok(item);
+        try
+        {
+            itemToGet = items.Find(i => i.ToDoItemId == toDoItemId);
+        }
+        catch (Exception ex)
+        {
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
+        }
+
+        //respond to client
+        return (itemToGet is null)
+            ? NotFound() //404
+            : Ok(ToDoItemGetResponseDto.FromDomain(itemToGet)); //200
         */
     }
 
-    [HttpPut("{id:int}")]
-    public IActionResult UpdateById(int id, [FromBody] ToDoItemUpdateRequestDto request)
+    [HttpPut("{toDoItemId:int}")]
+    public IActionResult UpdateById(int toDoItemId, [FromBody] ToDoItemUpdateRequestDto request)
     {
         //Lekce05
         //map to Domain object as soon as possible
         try
         {
             var updatedItem = request.ToDomain();
-            var itemIndexToUpdate = context.ToDoItems.Find(id);
+            var itemIndexToUpdate = context.ToDoItems.Find(toDoItemId);
 
             //try to update the item by retrieving it with given id
             if (updatedItem is null)
@@ -147,26 +167,39 @@ public class ToDoItemsController : ControllerBase
 
         //Lekce02
         /*
-        var item = newToDoItems.FirstOrDefault(i => i.ToDoItemId == id);
-        if(item == null)
-            return NotFound();
-        // aktualizace hodnot
-        item.Name = request.Name;
-        item.Description = request.Description;
-        item.IsCompleted = request.IsCompleted;
+        //map to Domain object as soon as possible
+        var updatedItem = request.ToDomain();
 
-        return NoContent();  //204
+        //try to update the item by retrieving it with given id
+        try
+        {
+            //retrieve the item
+            var itemIndexToUpdate = items.FindIndex(i => i.ToDoItemId == toDoItemId);
+            if (itemIndexToUpdate == -1)
+            {
+                return NotFound(); //404
+            }
+            updatedItem.ToDoItemId = toDoItemId;
+            items[itemIndexToUpdate] = updatedItem;
+        }
+        catch (Exception ex)
+        {
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
+        }
+
+        //respond to client
+        return NoContent(); //204
         */
     }
 
 
-    [HttpDelete("{id:int}")]
-    public IActionResult DeleteById(int id)
+    [HttpDelete("{itoDoItemId:int}")]
+    public IActionResult DeleteById(int toDoItemId)
     {
         //try to delete the item
         try
         {
-            var itemToDelete = context.ToDoItems.Find(id);
+            var itemToDelete = context.ToDoItems.Find(toDoItemId);
             if (itemToDelete is null)
                 return NotFound(); //404
 
@@ -183,13 +216,22 @@ public class ToDoItemsController : ControllerBase
 
         //Lekce02
         /*
-        var item = newToDoItems.FirstOrDefault(i => i.ToDoItemId == id);
+        try
+        {
+            var itemToDelete = items.Find(i => i.ToDoItemId == toDoItemId);
+            if (itemToDelete is null)
+            {
+                return NotFound(); //404
+            }
+            items.Remove(itemToDelete);
+        }
+        catch (Exception ex)
+        {
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+        }
 
-        if(item == null)
-            return NotFound();
-
-        newToDoItems.Remove(item);
-        return NoContent();
+        //respond to client
+        return NoContent(); //204
         */
     }
 }
