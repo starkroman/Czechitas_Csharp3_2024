@@ -1,5 +1,6 @@
 namespace ToDoList.WebApi.Controllers;
 
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
@@ -19,13 +20,11 @@ public class ToDoItemsController : ControllerBase
         new ToDoItem { ToDoItemId = 2, Name = "Uklidit",  Description = "Dětský pokoj", IsCompleted = true }
     };
     */
-    //public readonly List<ToDoItem> newToDoItems = [];
+    //public readonly List<ToDoItem> newToDoItems = [];   //lekce02
 
     private readonly ToDoItemsContext context;  // odstraníme pro mockování - Lekce06
     private readonly IRepository<ToDoItem> repository;   // doplnění Lekce06
-    public object items;
 
-    public object ToDoItems { get; set; }
     public ToDoItemsController()
     {
         //bezparametrický konstruktor
@@ -37,7 +36,6 @@ public class ToDoItemsController : ControllerBase
         this.context = context;
     }
 
-
     //přidám (Lekce06) konstruktor, modifikace konstruktoru (Lekce06)
     //Lekce06
     public ToDoItemsController(IRepository<ToDoItem> repository)
@@ -46,13 +44,11 @@ public class ToDoItemsController : ControllerBase
     }
 
     // Lekce 05
-    /*
     public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository)
     {
         this.context = context;
         this.repository = repository;
     }
-    */
 
     [HttpPost]
     public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
@@ -89,19 +85,19 @@ public class ToDoItemsController : ControllerBase
     public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()   // rozhraní IActionResult, vrátí JSON soubor...
     {
         List<ToDoItem> itemsToGet;
-
         try
         {
             //itemsToGet = newToDoItems;
             // Lekce05
-            itemsToGet = context.ToDoItems.ToList();
+            //itemsToGet = context.ToDoItems.ToList();
+            // Lekce06
+            itemsToGet = repository.Read().ToList();
         }
         catch (Exception ex)
         {
             return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
         }
         //return Ok(newToDoItems);  //moje
-
         //respond to client
         return (itemsToGet is null || itemsToGet.Count is 0)
         ? NotFound()  // 404
@@ -117,7 +113,8 @@ public class ToDoItemsController : ControllerBase
         //Lekce05
         try
         {
-            itemToGet = context.ToDoItems.Find(toDoItemId);
+            //itemToGet = context.ToDoItems.Find(toDoItemId);
+            itemToGet = repository.ReadById(toDoItemId);
         }
         catch (Exception ex)
         {
@@ -150,29 +147,36 @@ public class ToDoItemsController : ControllerBase
     [HttpPut("{toDoItemId:int}")]
     public IActionResult UpdateById(int toDoItemId, [FromBody] ToDoItemUpdateRequestDto request)
     {
+         //map to Domain object as soon as possible
+        var updatedItem = request.ToDomain();
+        updatedItem.ToDoItemId = toDoItemId;
         //Lekce05
-        //map to Domain object as soon as possible
         try
         {
-            var updatedItem = request.ToDomain();
-            var itemIndexToUpdate = context.ToDoItems.Find(toDoItemId);
-
-            //try to update the item by retrieving it with given id
-            if (updatedItem is null)
+            //retrieve the item
+            //var itemToUpdate = context.ToDoItems.Find(toDoItemId);
+            /*
+            var itemToUpdate = repository.ReadById(toDoItemId);
+            if (itemToUpdate is null)
+            {
                 return NotFound(); //404
+            }
+            */
+            repository.UpdateById(toDoItemId, updatedItem);
 
             // Aktualizace hodnot (např. názvu, popisu atd.)
-            itemIndexToUpdate.Name = updatedItem.Name;
-            itemIndexToUpdate.Description = updatedItem.Description;
-            itemIndexToUpdate.IsCompleted = updatedItem.IsCompleted;
+            //itemToUpdate.Name = updatedItem.Name;
+            //itemToUpdate.Description = updatedItem.Description;
+            //itemToUpdate.IsCompleted = updatedItem.IsCompleted;
 
-            context.SaveChanges();
+            // podle expertů...
+            //context.Entry(itemToUpdate).CurrentValues.SetValues(updatedItem);
+            //context.SaveChanges();
         }
         catch (Exception ex)
         {
             return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); //500
         }
-
         //respond to client
         return NoContent(); //204
 
@@ -210,18 +214,24 @@ public class ToDoItemsController : ControllerBase
         //try to delete the item
         try
         {
-            var itemToDelete = context.ToDoItems.Find(toDoItemId);
-            if (itemToDelete is null)
-                return NotFound(); //404
+            //var itemToDelete = context.ToDoItems.Find(toDoItemId);
 
-            context.ToDoItems.Remove(itemToDelete);
-            context.SaveChanges();
+            var itemToDelete = repository.ReadById(toDoItemId);
+
+            if (itemToDelete is null)
+            {
+                return NotFound(); //404
+            }
+
+            //context.ToDoItems.Remove(itemToDelete);
+            //context.SaveChanges();
+
+            repository.DeleteById(toDoItemId);
         }
         catch (Exception ex)
         {
             return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
         }
-
         //respond to client
         return NoContent(); //204
 
