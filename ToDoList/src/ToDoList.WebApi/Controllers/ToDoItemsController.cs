@@ -155,13 +155,13 @@ public class ToDoItemsController : ControllerBase
         {
             //retrieve the item
             //var itemToUpdate = context.ToDoItems.Find(toDoItemId);
-            /*
+
             var itemToUpdate = repository.ReadById(toDoItemId);
             if (itemToUpdate is null)
             {
                 return NotFound(); //404
             }
-            */
+            
             repository.UpdateById(toDoItemId, updatedItem);
 
             // Aktualizace hodnot (např. názvu, popisu atd.)
