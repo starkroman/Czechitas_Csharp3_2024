@@ -161,8 +161,8 @@ public class ToDoItemsController : ControllerBase
             {
                 return NotFound(); //404
             }
-            
-            repository.UpdateById(toDoItemId, updatedItem);
+
+            repository.Update(updatedItem);
 
             // Aktualizace hodnot (např. názvu, popisu atd.)
             //itemToUpdate.Name = updatedItem.Name;
