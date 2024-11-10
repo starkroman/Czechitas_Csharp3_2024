@@ -25,22 +25,17 @@ public class ToDoItemsController : ControllerBase
     private readonly ToDoItemsContext context;  // odstraníme pro mockování - Lekce06
     private readonly IRepository<ToDoItem> repository;   // doplnění Lekce06
 
+    /*
     public ToDoItemsController()
     {
         //bezparametrický konstruktor
     }
 
+
     //přidám (Lekce05) konstruktor
     public ToDoItemsController(ToDoItemsContext context)
     {
         this.context = context;
-    }
-
-    //přidám (Lekce06) konstruktor, modifikace konstruktoru (Lekce06)
-    //Lekce06
-    public ToDoItemsController(IRepository<ToDoItem> repository)
-    {
-        this.repository = repository;
     }
 
     // Lekce 05
@@ -49,6 +44,14 @@ public class ToDoItemsController : ControllerBase
         this.context = context;
         this.repository = repository;
     }
+    */
+    //přidám (Lekce06) konstruktor, modifikace konstruktoru (Lekce06)
+    //Lekce06
+    public ToDoItemsController(IRepository<ToDoItem> repository)
+    {
+        this.repository = repository;
+    }
+
 
     [HttpPost]
     public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
@@ -84,14 +87,14 @@ public class ToDoItemsController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()   // rozhraní IActionResult, vrátí JSON soubor...
     {
-        List<ToDoItem> itemsToGet;
+        IEnumerable<ToDoItem> itemsToGet;
         try
         {
             //itemsToGet = newToDoItems;
             // Lekce05
             //itemsToGet = context.ToDoItems.ToList();
             // Lekce06
-            itemsToGet = repository.Read().ToList();
+            itemsToGet = repository.Read();
         }
         catch (Exception ex)
         {
@@ -99,7 +102,7 @@ public class ToDoItemsController : ControllerBase
         }
         //return Ok(newToDoItems);  //moje
         //respond to client
-        return (itemsToGet is null || itemsToGet.Count is 0)
+        return (itemsToGet is null || !itemsToGet.Any())
         ? NotFound()  // 404
         : Ok(itemsToGet.Select(ToDoItemGetResponseDto.FromDomain));  //200
     }

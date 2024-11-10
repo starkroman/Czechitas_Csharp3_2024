@@ -6,13 +6,13 @@ using ToDoList.Domain.Models;
 using ToDoList.Persistence;
 using ToDoList.WebApi.Controllers;
 
-
-public class DeleteTests
+public class PutTests
 {
     [Fact]
-    public void Delete_ValidId_ReturnsNoContent()
+    public void Put_ValidId_ReturnsNoContent()
     {
         // Arrange
+        var path = AppContext.BaseDirectory;
         var context = new ToDoItemsContext("Data Source=../../data/localdb.db");
         var controller = new ToDoItemsController(context);
         var toDoItem = new ToDoItem
@@ -23,17 +23,24 @@ public class DeleteTests
             IsCompleted = false
         };
 
-        //controller.items.Add(toDoItem);
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
+
+        var request = new ToDoItemUpdateRequestDto(
+            Name: "Jine jmeno",
+            Description: "Jiny popis",
+            IsCompleted: true
+        );
 
         // Act
-        var result = controller.DeleteById(toDoItem.ToDoItemId);
+        var result = controller.UpdateById(toDoItem.ToDoItemId, request);
 
         // Assert
         Assert.IsType<NoContentResult>(result);
     }
 
     [Fact]
-    public void Delete_InvalidId_ReturnsNotFound()
+    public void Put_InvalidId_ReturnsNotFound()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../data/localdb.db");
@@ -46,11 +53,18 @@ public class DeleteTests
             IsCompleted = false
         };
 
-        //controller.items.Add(toDoItem);
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
+
+        var request = new ToDoItemUpdateRequestDto(
+            Name: "Jine jmeno",
+            Description: "Jiny popis",
+            IsCompleted: true
+        );
 
         // Act
         var invalidId = -1;
-        var result = controller.DeleteById(invalidId);
+        var result = controller.UpdateById(invalidId, request);
 
         // Assert
         Assert.IsType<NotFoundResult>(result);

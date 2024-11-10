@@ -26,10 +26,10 @@ public class UnitTest2
         var calculator = new Calculator();
 
         // Act
-        var result = () => calculator.Divide(10, 0);
+        var result = () => calculator.Divide(10, 0.0F);
 
         // Assert
-        Assert.Throws<DivideByZeroException>(() => calculator.Divide(10, 0));  //lambda výraz
+        Assert.Throws<DivideByZeroException>(() => calculator.Divide(10, 0.0F));  //lambda výraz
     }
 }
 
@@ -42,7 +42,7 @@ public class UnitTest3
         var calculator = new Calculator();
 
         // Act
-        var result = calculator.Divide(10, 0);
+        var result = calculator.Divide(10, 2.5F);
 
         // Assert
         Assert.Equal(float.PositiveInfinity, result);
