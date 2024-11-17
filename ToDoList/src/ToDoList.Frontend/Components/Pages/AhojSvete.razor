@@ -1,0 +1,42 @@
+﻿@page "/AhojSvete"
+
+<PageTitle>Nova stranka</PageTitle>
+
+<h1>@ahojSvete</h1>
+
+Vítej v mojí aplikaci.
+
+<p> Tohle je odstavec <br> se zalomenym textem</p>
+
+<h2>@ahoj_Svete()</h2>
+
+<h3>@VypisCisla1az10()</h3>
+
+<ul>
+    <li>odstavec 1</li>
+    <li>odstavec 2</li>
+</ul>
+
+<ol>
+    <li>odstavec 1</li>
+    <li>odstavec 2</li>
+</ol>
+
+@code
+{
+        string ahojSvete = "Ahoj světe z jiné stránky";
+        public string ahoj_Svete()
+        {
+            return "Ahoj svete z metody";
+        }
+
+        public string VypisCisla1az10()
+        {
+            string vypis = "";
+            for(int i = 0; i < 10; i++)
+            {
+               vypis += i + " ";
+            }
+            return vypis;
+        }
+}

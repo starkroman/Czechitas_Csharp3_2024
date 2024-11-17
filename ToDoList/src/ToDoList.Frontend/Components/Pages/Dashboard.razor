@@ -1,0 +1,72 @@
+﻿@rendermode InteractiveServer
+
+<h1>Dashboard</h1>
+
+<table border=1px>
+    <thead>
+    <tr>
+        <th>
+            ID
+            <button @onclick="SortById">Order by Id</button>
+        </th>
+        <th>
+            Name
+            <button @onclick="SortByName">Order by Name</button>
+        </th>
+        <th>Description
+            <button @onclick="SortByDescription">Order by Name</button>
+        </th>
+        <th>
+            Name
+            <button @onclick="SortByIsComleted">Order by IsCompleted</button>
+        </th>
+    </tr>
+</thead>
+    <tbody>
+        @foreach (var item in ToDoItems)
+        {
+            <tr>
+                <td>@item.ToDoItemId</td>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.IsCompleted</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code
+{
+
+    public List<ToDoItemView> ToDoItems = new List<ToDoItemView>
+    {
+        new ToDoItemView { ToDoItemId = 1, Name = "Nakoupit", Description = "Kaufland", IsCompleted = false },
+        new ToDoItemView { ToDoItemId = 2, Name = "Uklidit", Description = "Dětský pokoj", IsCompleted = true },
+        new ToDoItemView { ToDoItemId = 3, Name = "Práce", Description = "Závěrka", IsCompleted = false }
+    };
+
+    public void SortById()
+    {
+        ToDoItems = ToDoItems.OrderByDescending(item => item.ToDoItemId).ToList();
+    }
+    public void SortByName()
+    {
+        ToDoItems = ToDoItems.OrderBy(item => item.Name).ToList();
+    }
+    public void SortByDescription()
+    {
+        ToDoItems = ToDoItems.OrderByDescending(item => item.Description).ToList();
+    }
+    public void SortByIsComleted()
+    {
+        ToDoItems = ToDoItems.OrderByDescending(item => item.IsCompleted).ToList();
+    }
+
+    public class ToDoItemView
+    {
+        public int ToDoItemId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsCompleted { get; set; }
+    }
+}

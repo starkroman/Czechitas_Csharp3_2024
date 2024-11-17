@@ -1,0 +1,30 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>Domovská stránka</PageTitle>
+
+<!-- volání komponety -->
+<Dashboard/>
+
+<h1>@ahojSvete</h1>
+
+Vítej v mojí aplikaci.
+
+<br><br>
+<button @onclick="Increment">Moje tlačítko</button>
+
+<br>
+Hodnota pocitadla: @counter;
+
+@code
+{
+    string ahojSvete = "Ahoj světe po změně..";
+
+    int counter = 0;
+
+    // metoda
+    public void Increment()
+    {
+        counter++;
+    }
+}
