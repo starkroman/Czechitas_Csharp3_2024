@@ -1,0 +1,110 @@
+@page "/calculator"
+@rendermode InteractiveServer
+
+<h2>Blazor Kalkulačka</h2>
+
+<div>
+    <input type="text" value="@Display" disabled style="width: 230px; text-align: right;" />
+</div>
+
+<div>
+    @foreach (var row in Buttons)
+    {
+        <div>
+            @foreach (var button in row)
+            {
+                <button @onclick="() => OnButtonClick(button)" style="width: 50px; height: 50px; margin: 5px;">@button</button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string Display = "0";
+    private string CurrentNumber = "";
+    private string PreviousNumber = "";
+    private string Operation = "";
+    private bool IsOperationClicked = false;
+
+    private string[][] Buttons = new string[][]
+    {
+        new string[] { "7", "8", "9", "/" },
+        new string[] { "4", "5", "6", "*" },
+        new string[] { "1", "2", "3", "-" },
+        new string[] { "0", ".", "=", "+" },
+        new string[] { "C" }
+    };
+
+    private void OnButtonClick(string button)
+    {
+        if (int.TryParse(button, out _) || button == ".")
+        {
+            if (Display == "0" || IsOperationClicked)
+            {
+                Display = button;
+                IsOperationClicked = false;
+            }
+            else
+            {
+                Display += button;
+            }
+            CurrentNumber = Display;
+        }
+        else if (button == "C")
+        {
+            Display = "0";
+            CurrentNumber = "";
+            PreviousNumber = "";
+            Operation = "";
+            IsOperationClicked = false;
+        }
+        else if (button == "=")
+        {
+            CalculateResult();
+            Operation = "";
+        }
+        else // Operace
+        {
+            if (!string.IsNullOrEmpty(CurrentNumber))
+            {
+                if (!string.IsNullOrEmpty(PreviousNumber))
+                {
+                    CalculateResult();
+                }
+                else
+                {
+                    PreviousNumber = CurrentNumber;
+                }
+            }
+            Operation = button;
+            IsOperationClicked = true;
+        }
+    }
+
+    private void CalculateResult()
+    {
+        double num1 = double.Parse(PreviousNumber);
+        double num2 = double.Parse(CurrentNumber);
+        double result = 0;
+
+        switch (Operation)
+        {
+            case "+":
+                result = num1 + num2;
+                break;
+            case "-":
+                result = num1 - num2;
+                break;
+            case "*":
+                result = num1 * num2;
+                break;
+            case "/":
+                result = num2 != 0 ? num1 / num2 : 0;
+                break;
+        }
+
+        Display = result.ToString();
+        PreviousNumber = result.ToString();
+        CurrentNumber = "";
+    }
+}
