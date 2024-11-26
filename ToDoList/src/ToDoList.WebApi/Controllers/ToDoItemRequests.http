@@ -22,7 +22,8 @@ Content-Type: application/json
 {
   "name": "Nakoupit oběd",
   "description": "U Václava",
-  "isCompleted": true
+  "isCompleted": true,
+  "category": "Jídlo"
 }
 
 ###
@@ -36,11 +37,12 @@ Content-Type: application/json
 {
   "name": "Uklidit",
   "description": "Ložnici",
-  "isCompleted": false
+  "isCompleted": false,
+  "category": "Domácí práce"
 }
 
 ###
 
 //Delete exisiting ToDoItem by id
-@itemToDeleteId = 1
+@itemToDeleteId = 7
 DELETE {{host}}:{{port}}/{{endpoint}}/{{itemToDeleteId}}

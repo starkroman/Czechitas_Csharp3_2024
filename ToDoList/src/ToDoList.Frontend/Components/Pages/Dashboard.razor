@@ -1,4 +1,7 @@
-﻿@rendermode InteractiveServer
+﻿@using ToDoList.Frontend.Views
+@using ToDoList.Frontend.Clients
+@inject IToDoItemsClient ToDoItemsClient
+@rendermode InteractiveServer
 
 <h1>Dashboard</h1>
 
@@ -17,55 +20,69 @@
             <button @onclick="SortByDescription">Order by Name</button>
         </th>
         <th>
-            Name
+            IsCompleted
             <button @onclick="SortByIsComleted">Order by IsCompleted</button>
+        </th>
+        <th>
+            Category
+            <button @onclick="SortByIsCategory">Order by Category</button>
         </th>
     </tr>
 </thead>
     <tbody>
-        @foreach (var item in ToDoItems)
+        @if(ToDoItems is not null)
         {
-            <tr>
-                <td>@item.ToDoItemId</td>
-                <td>@item.Name</td>
-                <td>@item.Description</td>
-                <td>@item.IsCompleted</td>
-            </tr>
+            @foreach (var item in ToDoItems)
+            {
+                <tr>
+                    <td>@item.ToDoItemId</td>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.IsCompleted</td>
+                    <td>@item.Category</td>
+                </tr>
+            }
         }
     </tbody>
 </table>
 
 @code
 {
+
+    /*
     public List<ToDoItemView> ToDoItems = new List<ToDoItemView>
     {
         new ToDoItemView { ToDoItemId = 1, Name = "Nakoupit", Description = "Kaufland", IsCompleted = false },
         new ToDoItemView { ToDoItemId = 2, Name = "Uklidit", Description = "Dětský pokoj", IsCompleted = true },
         new ToDoItemView { ToDoItemId = 3, Name = "Práce", Description = "Závěrka", IsCompleted = false }
     };
+    */
+
+    // Lekce 9. - async, Task, await, ....
+    protected override async Task OnInitializedAsync()
+    {
+        ToDoItems = await ToDoItemsClient.ReadItemsAsync();
+    }
+    private List<ToDoItemView>? ToDoItems;
 
     public void SortById()
     {
-        ToDoItems = ToDoItems.OrderByDescending(item => item.ToDoItemId).ToList();
+        ToDoItems = ToDoItems?.OrderByDescending(item => item.ToDoItemId).ToList();
     }
     public void SortByName()
     {
-        ToDoItems = ToDoItems.OrderBy(item => item.Name).ToList();
+        ToDoItems = ToDoItems?.OrderBy(item => item.Name).ToList();
     }
     public void SortByDescription()
     {
-        ToDoItems = ToDoItems.OrderByDescending(item => item.Description).ToList();
+        ToDoItems = ToDoItems?.OrderByDescending(item => item.Description).ToList();
     }
     public void SortByIsComleted()
     {
-        ToDoItems = ToDoItems.OrderByDescending(item => item.IsCompleted).ToList();
+        ToDoItems = ToDoItems?.OrderByDescending(item => item.IsCompleted).ToList();
     }
-
-    public class ToDoItemView
+    public void SortByIsCategory()
     {
-        public int ToDoItemId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool IsCompleted { get; set; }
+        ToDoItems = ToDoItems?.OrderByDescending(item => item.Category).ToList();
     }
 }

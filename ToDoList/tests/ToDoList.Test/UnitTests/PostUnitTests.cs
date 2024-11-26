@@ -12,66 +12,56 @@ using Microsoft.AspNetCore.Http;
 public class PostUnitTests
 {
     [Fact]
-    public void Post_ValidRequest_ReturnsNewItem()
+    public async Task Post_CreateValidRequest_ReturnsCreatedAtAction()
     {
         // Arrange
-        //var context = new ToDoItemsContext("Data Source=../../data/localdb.db");
-        var repositoryMock = Substitute.For<IRepository<ToDoItem>>();  // nová věc...
-        var controller = new ToDoItemsController(repositoryMock);   // context nahrazen repository
-
+        var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
+        var controller = new ToDoItemsController(repositoryMock);
         var request = new ToDoItemCreateRequestDto(
             Name: "Jmeno",
             Description: "Popis",
-            IsCompleted: false
+            IsCompleted: false,
+            Category: "Osoba"
         );
 
         // Act
-        var result = controller.Create(request);
+        var result = await controller.Create(request);
         var resultResult = result.Result;
         var value = result.GetValue();
 
         // Assert
         Assert.IsType<CreatedAtActionResult>(resultResult);
+        repositoryMock.Received(1).Create(Arg.Any<ToDoItem>());
+
+        // These asserts are optional
         Assert.NotNull(value);
 
         Assert.Equal(request.Description, value.Description);
         Assert.Equal(request.IsCompleted, value.IsCompleted);
         Assert.Equal(request.Name, value.Name);
+        Assert.Equal(request.Category, value.Category);
     }
 
     [Fact]
-    public void Post_Exception_Returns500InternalServerError()
+    public async Task Post_CreateUnhandledException_ReturnsInternalServerError()
     {
         // Arrange
-        //var context = new ToDoItemsContext("Data Source=../../data/localdb.db");
-        var repositoryMock = Substitute.For<IRepository<ToDoItem>>();  // nový věci...
-        // dočasný hack, nez z controlleru odstranime context
-        var controller = new ToDoItemsController(repositoryMock);   // context nahrazen repository
-
+        var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
+        var controller = new ToDoItemsController(repositoryMock);
         var request = new ToDoItemCreateRequestDto(
             Name: "Jmeno",
             Description: "Popis",
-            IsCompleted: false
+            IsCompleted: false,
+            Category: "Osoba"
         );
-        // chování Mocku - když vytvoříme pomocí Create jakýkoliv argument - vyhodí to vždy exception
         repositoryMock.When(r => r.Create(Arg.Any<ToDoItem>())).Do(r => throw new Exception());
-        // pro Read
-        //repositoryMock.Read(Arg.Any<ToDoItem>()).Returns(r => new NotFoundObjectResult);
-
 
         // Act
-        var result = controller.Create(request);
+        var result = await controller.Create(request);
         var resultResult = result.Result;
-        //var value = result.GetValue();
 
         // Assert
-        /*
-        Assert.IsType<ObjectResult>(resultResult);  // aby test prošel
-        Assert.Equivalent(new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status500InternalServerError), resultResult);
-        */
-
-        Assert.IsType<ObjectResult>(resultResult); // Expecting 500 Internal Server Error
-        var objectResult = result.Result as ObjectResult;
-        Assert.Equal(500, objectResult.StatusCode);
+        Assert.IsType<ObjectResult>(resultResult);
+        Assert.Equivalent(new StatusCodeResult(StatusCodes.Status500InternalServerError), resultResult);
     }
 }

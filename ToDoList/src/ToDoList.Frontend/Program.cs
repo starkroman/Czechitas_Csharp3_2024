@@ -1,9 +1,14 @@
+using ToDoList.Frontend.Clients;
 using ToDoList.Frontend.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+
+// přidáme si 9.lekce HTTP Client
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5000") });
+builder.Services.AddScoped<IToDoItemsClient, ToDoItemsClient>();
 
 var app = builder.Build();
 
@@ -16,6 +21,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 
 app.UseStaticFiles();
 app.UseAntiforgery();

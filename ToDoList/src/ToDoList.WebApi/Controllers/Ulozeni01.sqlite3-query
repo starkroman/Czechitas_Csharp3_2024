@@ -1,4 +1,4 @@
--- database: ../../../data/localdb.db
+-- database: ../../data/localdb.db
 SELECT
     *
 FROM

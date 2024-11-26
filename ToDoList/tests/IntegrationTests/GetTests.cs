@@ -9,7 +9,7 @@ using ToDoList.WebApi.Controllers;
 public class GetTests
 {
     [Fact]
-    public void Get_AllItems_ReturnsAllItems()
+    public async Task Get_AllItems_ReturnsAllItems()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../data/localdb.db");
@@ -19,16 +19,17 @@ public class GetTests
             ToDoItemId = 1,
             Name = "Jmeno",
             Description = "Popis",
-            IsCompleted = false
+            IsCompleted = false,
+            Category = "Osoba"
         };
 
         context.ToDoItems.Add(toDoItem);
         context.SaveChanges();
 
         // Act
-        var result = controller.Read();
-        var resultResult = result.Result;
-        var value = result.GetValue();
+        var result = await controller.Read();
+        var resultResult = await result.Result;
+        var value = await result.GetValue();
 
         // Assert
         Assert.IsType<OkObjectResult>(resultResult);
@@ -39,10 +40,11 @@ public class GetTests
         Assert.Equal(toDoItem.Description, firstItem.Description);
         Assert.Equal(toDoItem.IsCompleted, firstItem.IsCompleted);
         Assert.Equal(toDoItem.Name, firstItem.Name);
+        Assert.Equal(toDoItem.Category, firstItem.Category);
     }
 
     [Fact]
-    public void Get_NoItems_ReturnsNotFound()
+    public async void Get_NoItems_ReturnsNotFound()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../data/localdb.db");

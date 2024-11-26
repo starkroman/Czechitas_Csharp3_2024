@@ -12,8 +12,7 @@ using ToDoList.WebApi.Controllers;
 public class DeleteUnitTests
 {
     [Fact]
-
-    public void Delete_ValidItems_ReturnsNoContent()
+    public async void Delete_ValidItems_ReturnsNoContent()
     {
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
@@ -31,8 +30,8 @@ public class DeleteUnitTests
         repositoryMock.Received(1).DeleteById(testId);
     }
 
-     [Fact]
-    public void Delete_ItemDoesNotExist_Returns404()
+    [Fact]
+    public async void Delete_ItemDoesNotExist_Returns404()
     {
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();

@@ -1,0 +1,77 @@
+@page "/Kalkulacka"
+@rendermode InteractiveServer
+
+<h3>Jednoduchá Blazor Kalkulačka</h3>
+
+<div>
+    <input type="text" value="@Display" disabled style="width: 200px; text-align: right;" />
+</div>
+
+<div>
+    @foreach (var row in Buttons)
+    {
+        <div>
+            @foreach (var button in row)
+            {
+                <button @onclick="() => OnButtonClick(button)" style="width: 50px; height: 50px; margin: 5px;">@button</button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string Display = "0";
+    private string Expression = "";
+
+    private string[][] Buttons = new string[][]
+    {
+        new string[] { "7", "8", "9", "/" },
+        new string[] { "4", "5", "6", "*" },
+        new string[] { "1", "2", "3", "-" },
+        new string[] { "0", ".", "=", "+" },
+        new string[] { "C" }
+    };
+
+    private void OnButtonClick(string button)
+    {
+        if (button == "C")
+        {
+            Display = "0";
+            Expression = "";
+        }
+        else if (button == "=")
+        {
+            try
+            {
+                var result = EvaluateExpression(Expression);
+                Display = result.ToString();
+                Expression = result.ToString();
+            }
+            catch
+            {
+                Display = "Chyba";
+                Expression = "";
+            }
+        }
+        else
+        {
+            if (Display == "0" && button != ".")
+            {
+                Display = button;
+            }
+            else
+            {
+                Display += button;
+            }
+            Expression += button;
+        }
+    }
+
+    private double EvaluateExpression(string expression)
+    {
+        // Poznámka: Použití DataTable.Compute je jednoduché, ale v produkčním prostředí
+        // je lepší použít bezpečnější metodu pro vyhodnocení matematických výrazů.
+        var table = new System.Data.DataTable();
+        return Convert.ToDouble(table.Compute(expression, string.Empty));
+    }
+}

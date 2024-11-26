@@ -54,10 +54,10 @@ public class ToDoItemsController : ControllerBase
 
 
     [HttpPost]
-    public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
+    public async Task<ActionResult<ToDoItemGetResponseDto>> Create(ToDoItemCreateRequestDto request)
     {
         //map to Domain object as soon as possible
-        var item = request.ToDomain();
+        var item = request.GetToDomain();
 
         //try to create an item
         try
@@ -69,7 +69,7 @@ public class ToDoItemsController : ControllerBase
             //context.ToDoItems.Add(item);
             //context.SaveChanges();
             // Lekce06
-            repository.Create(item);   // tady to upravím...
+            await repository.Create(item);   // tady to upravím...
 
         }
         catch (Exception ex)
@@ -85,7 +85,7 @@ public class ToDoItemsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()   // rozhraní IActionResult, vrátí JSON soubor...
+    public async Task<ActionResult<IEnumerable<ToDoItemGetResponseDto>>> Read()   // rozhraní IActionResult, vrátí JSON soubor...
     {
         IEnumerable<ToDoItem> itemsToGet;
         try
@@ -94,7 +94,7 @@ public class ToDoItemsController : ControllerBase
             // Lekce05
             //itemsToGet = context.ToDoItems.ToList();
             // Lekce06
-            itemsToGet = repository.Read();
+            itemsToGet = await repository.Read();
         }
         catch (Exception ex)
         {
@@ -108,7 +108,7 @@ public class ToDoItemsController : ControllerBase
     }
 
     [HttpGet("{toDoItemId:int}")]
-    public IActionResult ReadById(int toDoItemId)
+    public async Task<IActionResult> ReadById(int toDoItemId)
     {
         //try to retrieve the item by id
         ToDoItem? itemToGet;
@@ -117,7 +117,7 @@ public class ToDoItemsController : ControllerBase
         try
         {
             //itemToGet = context.ToDoItems.Find(toDoItemId);
-            itemToGet = repository.ReadById(toDoItemId);
+            itemToGet = await repository.ReadById(toDoItemId);
         }
         catch (Exception ex)
         {
@@ -148,9 +148,9 @@ public class ToDoItemsController : ControllerBase
     }
 
     [HttpPut("{toDoItemId:int}")]
-    public IActionResult UpdateById(int toDoItemId, [FromBody] ToDoItemUpdateRequestDto request)
+    public async Task<IActionResult> UpdateById(int toDoItemId, [FromBody] ToDoItemUpdateRequestDto request)
     {
-         //map to Domain object as soon as possible
+        //map to Domain object as soon as possible
         var updatedItem = request.ToDomain();
         updatedItem.ToDoItemId = toDoItemId;
         //Lekce05
@@ -159,13 +159,13 @@ public class ToDoItemsController : ControllerBase
             //retrieve the item
             //var itemToUpdate = context.ToDoItems.Find(toDoItemId);
 
-            var itemToUpdate = repository.ReadById(toDoItemId);
+            var itemToUpdate = await repository.ReadById(toDoItemId);
             if (itemToUpdate is null)
             {
                 return NotFound(); //404
             }
 
-            repository.Update(updatedItem);
+            await repository.Update(updatedItem);
 
             // Aktualizace hodnot (např. názvu, popisu atd.)
             //itemToUpdate.Name = updatedItem.Name;
@@ -212,14 +212,14 @@ public class ToDoItemsController : ControllerBase
 
 
     [HttpDelete("{itoDoItemId:int}")]
-    public IActionResult DeleteById(int toDoItemId)
+    public async Task<IActionResult> DeleteById(int toDoItemId)
     {
         //try to delete the item
         try
         {
             //var itemToDelete = context.ToDoItems.Find(toDoItemId);
 
-            var itemToDelete = repository.ReadById(toDoItemId);
+            var itemToDelete = await repository.ReadById(toDoItemId);
 
             if (itemToDelete is null)
             {
@@ -229,7 +229,7 @@ public class ToDoItemsController : ControllerBase
             //context.ToDoItems.Remove(itemToDelete);
             //context.SaveChanges();
 
-            repository.DeleteById(toDoItemId);
+            await repository.DeleteById(toDoItemId);
         }
         catch (Exception ex)
         {

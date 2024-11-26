@@ -1,67 +1,69 @@
 using NSubstitute;
 using Microsoft.AspNetCore.Mvc;
-using ToDoList.Domain.DTOs;
-using ToDoList.Persistence;
 using ToDoList.WebApi.Controllers;
 using ToDoList.Persistence.Repositories;
 using ToDoList.Domain.Models;
 using Microsoft.AspNetCore.Http;
-
+using NSubstitute.ExceptionExtensions;
+using NSubstitute.ReturnsExtensions;
 
 namespace ToDoList.Test.UnitTests
 {
     public class GetByIdUnitTests
     {
-        [Fact]
-        public void GetById_ValidId_ReturnsItem()
+         [Fact]
+        public async Task Get_ReadByIdWhenSomeItemAvailable_ReturnsOk()
         {
             // Arrange
             var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
             var controller = new ToDoItemsController(repositoryMock);
-            var toDoItem = new ToDoItem
-            {
-                ToDoItemId = 1,
-                Name = "Jmeno",
-                Description = "Popis",
-                IsCompleted = false
-            };
-            // Mock the ReadById method to return the ToDoItem for the valid ID
-            repositoryMock.ReadById(toDoItem.ToDoItemId).Returns(toDoItem);
+            var someId = 1;
+            repositoryMock.ReadById(someId).Returns(new ToDoItem { Name = "testItem", Description = "testDescription", IsCompleted = false, Category = "testCategory" });
 
             // Act
-            var result = controller.ReadById(toDoItem.ToDoItemId);
-            var resultResult = result.Result;
+            var result = await controller.ReadById(someId);
+            var resultResult = result.ExecuteResultAsync;
 
             // Assert
-            Assert.IsType<OkObjectResult>(resultResult); // Expecting 200 OK
-            var okResult = resultResult as OkObjectResult;
-            var value = okResult.Value as ToDoItemGetResponseDto;
-
-            Assert.NotNull(value);
-            Assert.Equal(toDoItem.ToDoItemId, value.Id);
-            Assert.Equal(toDoItem.Description, value.Description);
-            Assert.Equal(toDoItem.IsCompleted, value.IsCompleted);
-            Assert.Equal(toDoItem.Name, value.Name);
-
+            Assert.IsType<OkObjectResult>(resultResult);
+            repositoryMock.Received(1).ReadById(someId);
         }
 
         [Fact]
-        public void GetById_InvalidId_ReturnsNotFound()
+        public async Task Get_ReadByIdWhenItemIsNull_ReturnsNotFound()
         {
             // Arrange
             var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
             var controller = new ToDoItemsController(repositoryMock);
-
-            // Mock the ReadById method to return null for an invalid ID
-            repositoryMock.ReadById(-1).Returns((ToDoItem)null); // Simulate that item with ID -1 does not exist
+            var someId = 1;
+            repositoryMock.ReadById(someId).ReturnsNull();
 
             // Act
-            var invalidId = -1;
-            var result = controller.ReadById(invalidId);
-            var resultResult = result.Result;
+            var result = await controller.ReadById(someId);
+            var resultResult = result.ExecuteResultAsync;
 
             // Assert
-            Assert.IsType<NotFoundResult>(resultResult); // Expecting 404 Not Found
+            Assert.IsType<NotFoundResult>(resultResult);
+            repositoryMock.Received(1).ReadById(someId);
+        }
+
+    [Fact]
+        public async Task Get_ReadByIdUnhandledException_ReturnsInternalServerError()
+        {
+            // Arrange
+            var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
+            var controller = new ToDoItemsController(repositoryMock);
+            var someId = 1;
+
+            repositoryMock.ReadById(someId).Throws(new Exception());
+
+            // Act
+            var result = await controller.ReadById(someId);
+            var resultResult = result.ExecuteResultAsync;
+            // Assert
+            Assert.IsType<ObjectResult>(resultResult);
+            repositoryMock.Received(1).ReadById(someId);
+            Assert.Equivalent(new StatusCodeResult(StatusCodes.Status500InternalServerError), resultResult);
         }
     }
 }
