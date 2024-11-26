@@ -8,7 +8,7 @@ using ToDoList.WebApi.Controllers;
 public class GetByIdTests
 {
     [Fact]
-    public void GetById_ValidId_ReturnsItem()
+    public async Task GetById_ValidId_ReturnsItem()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../data/localdb.db");
@@ -24,9 +24,9 @@ public class GetByIdTests
         context.SaveChanges();
 
         // Act
-        var result = controller.ReadById(toDoItem.ToDoItemId);
-        var resultResult = result.Result;
-        var value = result.GetValue();
+        var result =  await controller.ReadById(toDoItem.ToDoItemId);
+        var resultResult = await result.Result;
+        var value = await result.GetValue();
 
         // Assert
         Assert.IsType<OkObjectResult>(resultResult);
@@ -39,7 +39,7 @@ public class GetByIdTests
     }
 
     [Fact]
-    public void GetById_InvalidId_ReturnsNotFound()
+    public async Task GetById_InvalidId_ReturnsNotFound()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../data/localdb.db");
@@ -57,8 +57,8 @@ public class GetByIdTests
 
         // Act
         var invalidId = -1;
-        var result = controller.ReadById(invalidId);
-        var resultResult = result.Result;
+        var result = await controller.ReadById(invalidId);
+        var resultResult = await result.Result;
 
         // Assert
         Assert.IsType<NotFoundResult>(resultResult);

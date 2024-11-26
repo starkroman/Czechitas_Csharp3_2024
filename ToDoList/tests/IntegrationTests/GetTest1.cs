@@ -12,7 +12,7 @@ public class GetTest1
 {
     [Fact]   // atribut = test
 
-    public void Get_AllItems_ReturnsAllItems()
+    public async Task Get_AllItems_ReturnsAllItems()
     {
         // Arrange
         var controller = new ToDoItemsController();
@@ -27,9 +27,9 @@ public class GetTest1
         //controller.ToDoItems.Add(toDoItem);
 
         // Act
-        var result = controller.Read();
-        var resultResult = result.Result;
-        var value = result.GetValue();
+        var result = await controller.Read();
+        var resultResult = await result.Result;
+        var value = await result.GetValue();
 
         // Assert
         Assert.IsType<OkObjectResult>(resultResult);

@@ -44,15 +44,15 @@ public class GetTests
     }
 
     [Fact]
-    public async void Get_NoItems_ReturnsNotFound()
+    public async Task Get_NoItems_ReturnsNotFound()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../data/localdb.db");
         var controller = new ToDoItemsController(context);
 
         // Act
-        var result = controller.Read();
-        var resultResult = result.Result;
+        var result = await controller.Read();
+        var resultResult = await result.Result;
 
         // Assert
         Assert.IsType<NotFoundResult>(resultResult);

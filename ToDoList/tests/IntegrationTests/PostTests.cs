@@ -10,7 +10,7 @@ using ToDoList.WebApi.Controllers;
 public class PostTests
 {
     [Fact]
-    public void Post_ValidRequest_ReturnsNewItem()
+    public async Task Post_ValidRequest_ReturnsNewItem()
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../data/localdb.db");
@@ -22,9 +22,9 @@ public class PostTests
         );
 
         // Act
-        var result = controller.Create(request);
-        var resultResult = result.Result;
-        var value = result.GetValue();
+        var result = await controller.Create(request);
+        var resultResult = await result.Result;
+        var value = await result.GetValue();
 
         // Assert
         Assert.IsType<CreatedAtActionResult>(resultResult);

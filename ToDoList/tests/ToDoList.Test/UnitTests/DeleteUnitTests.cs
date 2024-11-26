@@ -12,7 +12,7 @@ using ToDoList.WebApi.Controllers;
 public class DeleteUnitTests
 {
     [Fact]
-    public async void Delete_ValidItems_ReturnsNoContent()
+    public async Task Delete_ValidItems_ReturnsNoContent()
     {
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
@@ -22,7 +22,7 @@ public class DeleteUnitTests
         int testId = 1;
 
         // Act
-        var result = controller.DeleteById(testId);
+        var result = await controller.DeleteById(testId);
 
         // Assert
         Assert.IsType<NoContentResult>(result);
@@ -31,7 +31,7 @@ public class DeleteUnitTests
     }
 
     [Fact]
-    public async void Delete_ItemDoesNotExist_Returns404()
+    public async Task Delete_ItemDoesNotExist_Returns404()
     {
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
@@ -41,7 +41,7 @@ public class DeleteUnitTests
         repositoryMock.ReadById(999).Returns((ToDoItem)null); // Simulate that item with ID 999 does not exist
 
         // Act
-        var result = controller.DeleteById(999); // Non-existent ID
+        var result = await controller.DeleteById(999); // Non-existent ID
 
         // Assert
         Assert.IsType<NotFoundResult>(result); // Expecting 404 Not Found
