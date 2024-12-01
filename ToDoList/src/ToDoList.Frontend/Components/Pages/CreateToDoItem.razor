@@ -1,0 +1,45 @@
+﻿
+@page "/createToDoItem"
+
+@using ToDoList.Frontend.Views
+@using ToDoList.Frontend.Clients
+@inject NavigationManager NavigationManager
+
+@inject IToDoItemsClient ToDoItemsClient
+
+@rendermode InteractiveServer
+
+
+<PageTitle>Create To Do Item</PageTitle>
+
+@if (ToDoItem is not null)
+{
+    <h1 class="mb-3">Přidat záznam:</h1>
+    <EditForm Model="ToDoItem" FormName="CreateToDoItem" OnSubmit="Submit">
+        <label>Name:</label><br>
+        <InputText id="Name" @bind-Value="ToDoItem.Name" /><br>
+        <label>Description:</label><br>
+        <InputText id="Description" @bind-Value="ToDoItem.Description" /><br>
+        <label>IsComplited:</label><br>
+        <InputCheckbox id="IsCompleted" @bind-Value="ToDoItem.IsCompleted" /><br>
+        <label>Category:</label><br>
+        <InputText id="Category" @bind-Value="ToDoItem.Category" /><br>
+        <button class="btn btn-warning mt-3" type="submit">Přidat</button>
+    </EditForm>
+}
+
+
+@code
+{
+    // Inicializace nového objektu ToDoItem
+    public ToDoItemView ToDoItem { get; set; } = new ToDoItemView();
+
+    public async Task Submit()
+    {
+        // Vloží nový záznam do databáze
+        await ToDoItemsClient.CreateItemAsync(ToDoItem);
+        // Přesměruje na hlavní stránku po úspěšném vložení
+        NavigationManager.NavigateTo("/");
+    }
+
+}

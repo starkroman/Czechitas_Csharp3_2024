@@ -1,60 +1,88 @@
-﻿@using ToDoList.Frontend.Views
+﻿@using ToDoList.Domain.Models
+@using ToDoList.Frontend.Views
 @using ToDoList.Frontend.Clients
 @inject IToDoItemsClient ToDoItemsClient
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <h1>Dashboard</h1>
 
-<table border=1px>
-    <thead>
-    <tr>
-        <th>
-            ID
-            <button @onclick="SortById">Order by Id</button>
-        </th>
-        <th>
-            Name
-            <button @onclick="SortByName">Order by Name</button>
-        </th>
-        <th>Description
-            <button @onclick="SortByDescription">Order by Name</button>
-        </th>
-        <th>
-            IsCompleted
-            <button @onclick="SortByIsComleted">Order by IsCompleted</button>
-        </th>
-        <th>
-            Category
-            <button @onclick="SortByIsCategory">Order by Category</button>
-        </th>
-    </tr>
-</thead>
+<table class="table table-hover mt-5">
+    <thead class="table-dark">
+        <tr>
+            <th>ID
+                <button class="btn btn-success" @onclick="SortById">by Id</button>
+            </th>
+            <th>Name
+                <button class="btn btn-success" @onclick="SortByName">by Name</button>
+            </th>
+            <th>Description
+                <button class="btn btn-success" @onclick="SortByDescription">by Description</button>
+            </th>
+            <th>IsCompleted
+                <button class="btn btn-success" @onclick="SortByIsComleted">by IsCompleted</button>
+            </th>
+            <th>Category
+                <button class="btn btn-success" @onclick="SortByCategory">by Category</button>
+            </th>
+            <th>Action</th>
+        </tr>
+    </thead>
     <tbody>
         @if(ToDoItems is not null)
         {
-            @foreach (var item in ToDoItems)
+            @foreach (var ToDoItem in ToDoItems)
             {
-                <tr>
-                    <td>@item.ToDoItemId</td>
-                    <td>@item.Name</td>
-                    <td>@item.Description</td>
-                    <td>@item.IsCompleted</td>
-                    <td>@item.Category</td>
+                <tr class="@GetCorrectClassForTableLine(ToDoItem.IsCompleted)">
+                    <td>@ToDoItem.ToDoItemId</td>
+                    <td>@ToDoItem.Name</td>
+                    <td>@ToDoItem.Description</td>
+                    <td>@ToDoItem.IsCompleted</td>
+                    <td>@ToDoItem.Category</td>
+                    <td class="d-flex gap-3">
+                        <button class="btn btn-primary" @onclick="() => EditItem(ToDoItem)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteItem(ToDoItem)">Delete</button>
+                    </td>
                 </tr>
             }
         }
+        <tr>
+            <td>
+                <button class="btn btn-warning" @onclick="() => CreateItem()">Create</button>
+            </td>
+            <td>
+                <button class="btn btn-secondary" @onclick="SortByIsCompletedTrue">IsCompleted TRUE</button>
+            </td>
+            <td>
+                <button class="btn btn-secondary" @onclick="SortByIsCompletedFalse">IsCompleted FALSE</button>
+            </td>
+            <td>
+                <button class="btn btn-secondary" @onclick="SortByIsComleted">IsCompleted ALL</button>
+            </td>
+        </tr>
     </tbody>
 </table>
 
+
 @code
 {
-
+    protected string GetCorrectClassForTableLine(bool IsCompleted)
+    {
+        return IsCompleted ? "table-success" : "table-secondary";
+    }
     /*
     public List<ToDoItemView> ToDoItems = new List<ToDoItemView>
     {
         new ToDoItemView { ToDoItemId = 1, Name = "Nakoupit", Description = "Kaufland", IsCompleted = false },
         new ToDoItemView { ToDoItemId = 2, Name = "Uklidit", Description = "Dětský pokoj", IsCompleted = true },
         new ToDoItemView { ToDoItemId = 3, Name = "Práce", Description = "Závěrka", IsCompleted = false }
+
+        <tr class="@(toDoItem.IsCompleted ? "table-secondary table-success" : "table-secondary")">
+
+        https://getbootstrap.com/
+        https://github.com/czechitas/csharp3-template/blob/main/ToDoList/src/ToDoList.Frontend/Clients/ToDoItemsClient.cs
+        https://github.com/czechitas/csharp3-template/blob/main/ToDoList/src/ToDoList.Frontend/Clients/IToDoItemsClient.cs
+
     };
     */
 
@@ -63,6 +91,24 @@
     {
         ToDoItems = await ToDoItemsClient.ReadItemsAsync();
     }
+
+    // Lekce 10
+    public void EditItem(ToDoItemView toDoItem)
+    {
+        NavigationManager.NavigateTo($"editToDoItem/{toDoItem.ToDoItemId}");
+    }
+
+    public void DeleteItem(ToDoItemView toDoItem)
+    {
+        NavigationManager.NavigateTo($"deleteToDoItem/{toDoItem.ToDoItemId}");
+    }
+
+    public void CreateItem()
+    {
+        NavigationManager.NavigateTo($"createToDoItem/");
+    }
+
+    // Lekce 9.
     private List<ToDoItemView>? ToDoItems;
 
     public void SortById()
@@ -81,8 +127,26 @@
     {
         ToDoItems = ToDoItems?.OrderByDescending(item => item.IsCompleted).ToList();
     }
-    public void SortByIsCategory()
+    public void SortByCategory()
     {
         ToDoItems = ToDoItems?.OrderByDescending(item => item.Category).ToList();
+    }
+
+    public void SortByIsCompletedTrue()
+    {
+        OnInitializedAsync();
+        ToDoItems = ToDoItems?.Where(item => item.IsCompleted == true).ToList();
+    }
+
+    public void SortByIsCompletedFalse()
+    {
+        OnInitializedAsync();
+        ToDoItems = ToDoItems?.Where(item => item.IsCompleted == false).ToList();
+    }
+
+    public void SortByIsComletedAll()
+    {
+        OnInitializedAsync();
+        ToDoItems = ToDoItems?.OrderBy(item => item.IsCompleted).ToList();
     }
 }

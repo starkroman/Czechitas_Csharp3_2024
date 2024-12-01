@@ -1,0 +1,50 @@
+﻿
+@page "/deleteToDoItem/{ItemId:int}"
+
+@using ToDoList.Frontend.Views
+@using ToDoList.Frontend.Clients
+@inject NavigationManager NavigationManager
+
+@inject IToDoItemsClient ToDoItemsClient
+
+@rendermode InteractiveServer
+
+
+<PageTitle>Delete To Do Item</PageTitle>
+
+@if (ToDoItem is not null)
+{
+    <h1 class="mb-3">Smazat záznam:</h1>
+    <EditForm Model="ToDoItem" FormName="DeleteToDoItem" OnSubmit="Submit">
+        <label>Name:</label><br>
+        <InputText id="Name" @bind-Value="ToDoItem.Name" /><br>
+        <label>Description:</label><br>
+        <InputText id="Description" @bind-Value="ToDoItem.Description" /><br>
+        <label>IsComplited:</label><br>
+        <InputCheckbox id="IsCompleted" @bind-Value="ToDoItem.IsCompleted" /><br>
+        <label>Category:</label><br>
+        <InputText id="Category" @bind-Value="ToDoItem.Category" /><br>
+        <button class="btn btn-danger mt-3" type="submit">Smazat</button>
+    </EditForm>
+}
+
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        ToDoItem = await ToDoItemsClient.ReadItemByIdAsync(ItemId);
+    }
+
+    [Parameter]
+    public int ItemId {get; set;}
+
+    [SupplyParameterFromForm]
+    public ToDoItemView ToDoItem {get; set;}
+
+    public async Task Submit()
+    {
+        await ToDoItemsClient.DeleteItemAsync(ToDoItem);
+        NavigationManager.NavigateTo("/");
+    }
+}
