@@ -15,6 +15,7 @@
 @if (ToDoItem is not null)
 {
     <h1 class="mb-3">Smazat záznam:</h1>
+
     <EditForm Model="ToDoItem" FormName="DeleteToDoItem" OnSubmit="Submit">
         <label>Name:</label><br>
         <InputText id="Name" @bind-Value="ToDoItem.Name" /><br>
@@ -40,7 +41,7 @@
     public int ItemId {get; set;}
 
     [SupplyParameterFromForm]
-    public ToDoItemView ToDoItem {get; set;}
+    public required ToDoItemView ToDoItem {get; set;}
 
     public async Task Submit()
     {

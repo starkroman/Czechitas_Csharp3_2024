@@ -25,7 +25,8 @@
             <th>Category
                 <button class="btn btn-success" @onclick="SortByCategory">by Category</button>
             </th>
-            <th>Action</th>
+            <th>Edit</th>
+            <th>Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -39,26 +40,16 @@
                     <td>@ToDoItem.Description</td>
                     <td>@ToDoItem.IsCompleted</td>
                     <td>@ToDoItem.Category</td>
-                    <td class="d-flex gap-3">
-                        <button class="btn btn-primary" @onclick="() => EditItem(ToDoItem)">Edit</button>
-                        <button class="btn btn-danger" @onclick="() => DeleteItem(ToDoItem)">Delete</button>
-                    </td>
+                    <td><button class="btn btn-primary" @onclick="() => EditItem(ToDoItem)">Edit</button></td>
+                    <td><button class="btn btn-danger" @onclick="() => DeleteItem(ToDoItem)">Delete</button></td>
                 </tr>
             }
         }
         <tr>
-            <td>
-                <button class="btn btn-warning" @onclick="() => CreateItem()">Create</button>
-            </td>
-            <td>
-                <button class="btn btn-secondary" @onclick="SortByIsCompletedTrue">IsCompleted TRUE</button>
-            </td>
-            <td>
-                <button class="btn btn-secondary" @onclick="SortByIsCompletedFalse">IsCompleted FALSE</button>
-            </td>
-            <td>
-                <button class="btn btn-secondary" @onclick="SortByIsComleted">IsCompleted ALL</button>
-            </td>
+            <td><button class="btn btn-warning" @onclick="() => CreateItem()">Create</button></td>
+            <td><button class="btn btn-secondary" @onclick="SortByIsCompletedTrue">IsCompleted TRUE</button></td>
+            <td><button class="btn btn-secondary" @onclick="SortByIsCompletedFalse">IsCompleted FALSE</button></td>
+            <td><button class="btn btn-secondary" @onclick="SortByIsComleted">IsCompleted ALL</button></td>
         </tr>
     </tbody>
 </table>

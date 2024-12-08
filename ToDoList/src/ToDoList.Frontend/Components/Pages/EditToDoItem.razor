@@ -1,10 +1,8 @@
-﻿
-@page "/editToDoItem/{ItemId:int}"
+﻿@page "/editToDoItem/{ItemId:int}"
 
 @using ToDoList.Frontend.Views
 @using ToDoList.Frontend.Clients
 @inject NavigationManager NavigationManager
-
 @inject IToDoItemsClient ToDoItemsClient
 
 @rendermode InteractiveServer
@@ -15,23 +13,81 @@
 @if (ToDoItem is not null)
 {
     <h1 class="mb-3">Edituj záznamy:</h1>
+
+    /*
     <EditForm Model="ToDoItem" FormName="EditToDoItem" OnSubmit="Submit">
         <label>Name:</label><br>
         <InputText id="Name" @bind-Value="ToDoItem.Name" /><br>
+
         <label>Description:</label><br>
         <InputText id="Description" @bind-Value="ToDoItem.Description" /><br>
+
         <label>IsComplited:</label><br>
         <InputCheckbox id="IsCompleted" @bind-Value="ToDoItem.IsCompleted" /><br>
+
         <label>Category:</label><br>
         <InputText id="Category" @bind-Value="ToDoItem.Category" /><br>
+
         <button class="btn btn-primary mt-3" type="submit">Uložit</button>
+    </EditForm>
+    */
+
+    <EditForm Model="ToDoItem" FormName="EditToDoItem" OnValidSubmit="Submit"> @*OnSubmit -> OnValidSubmit*@
+        <DataAnnotationsValidator />
+
+        <label for="Name" class="form-label">Name:</label>
+        <InputText id="Name" class="form-control" @bind-Value="ToDoItem.Name" />
+        <ValidationMessage For="() => ToDoItem.Name" /><br>
+
+        <label for="Description" class="form-label">Description:</label>
+        <InputText id="Description" class="form-control" @bind-Value="ToDoItem.Description" />
+        <ValidationMessage For="() => ToDoItem.Description" /><br>
+
+        <label for="IsCompleted" class="form-check-label">IsCompleted:</label>
+        <InputCheckbox id="IsCompleted" class="form-check" @bind-Value="ToDoItem.IsCompleted" />
+        <ValidationMessage For="() => ToDoItem.IsCompleted" /><br>
+
+        <label for="Category" class="form-label">Category:</label>
+        <InputText id="Category" class="form-control" @bind-Value="ToDoItem.Category" />
+        <ValidationMessage For="() => ToDoItem.Category" /><br>
+
+        <button class="btn btn-primary mt-3" type="submit">Uložit</button>
+
     </EditForm>
 }
 
 
 @code
 {
+    /*
+    public delegate void ToDoItemViewProcessingDelegate(ToDoItemView itemView);
+    public ToDoItemViewProcessingDelegate SubmitDelegate;
+
+    private ToDoItemView CurrentToDoItemView { get; set; }
+
+    private void LogSubmit(ToDoItemView itemView)
+    {
+        Console.WriteLine($"ToDoItemView.ToDoItemId submitted: {itemView.ToDoItemId}");
+    }
+
     protected override async Task OnInitializedAsync()
+    {
+        SubmitDelegate = LogSubmit;
+        SubmitDelegate += LogSubmit;
+        SubmitDelegate -= LogSubmit;
+
+        ToDoItem = await ToDoItemsClient.ReadItemByIdAsync(ItemId);
+    }
+
+    public async Task Submit()
+    {
+        SubmitDelegate?.Invoke(CurrentToDoItemView);
+        //
+        await ToDoItemsClient.UpdateItemAsync(ToDoItem);
+        NavigationManager.NavigateTo("/");   // vrátí mě to zpět
+    }
+    */
+   protected override async Task OnInitializedAsync()
     {
         ToDoItem = await ToDoItemsClient.ReadItemByIdAsync(ItemId);
     }
@@ -47,5 +103,4 @@
         await ToDoItemsClient.UpdateItemAsync(ToDoItem);
         NavigationManager.NavigateTo("/");
     }
-
 }
